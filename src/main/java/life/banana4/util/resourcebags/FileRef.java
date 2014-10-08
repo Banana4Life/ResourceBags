@@ -22,6 +22,8 @@
  */
 package life.banana4.util.resourcebags;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
 
@@ -51,7 +53,15 @@ public class FileRef {
     }
 
     public InputStream getInputStream() {
-        return this.classLoader.getResourceAsStream(this.path);
+        InputStream in = this.classLoader.getResourceAsStream(this.path);
+        if (in != null) {
+            return in;
+        }
+        try {
+            return new FileInputStream(this.path);
+        } catch (FileNotFoundException e) {
+            return null;
+        }
     }
 
     public URL getURL() {
