@@ -22,12 +22,47 @@
  */
 package life.banana4.util.resourcebags;
 
-public class BrokenResourceBagException extends RuntimeException {
-    public BrokenResourceBagException(Throwable throwable) {
-        super(throwable);
+import java.io.InputStream;
+import java.net.URL;
+
+public class FileRef {
+    private final ClassLoader classLoader;
+    private final String path;
+
+    private FileRef(ClassLoader loader, String path) {
+        this.classLoader = loader;
+        this.path = path;
     }
 
-    public BrokenResourceBagException(String s) {
-        super(s);
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public FileRef child(String relativePath) {
+        String path = this.path;
+        if (!path.endsWith("/")) {
+            path += "/";
+        }
+        return new FileRef(this.classLoader, path + relativePath);
+    }
+
+    public InputStream getInputStream() {
+        return this.classLoader.getResourceAsStream(this.path);
+    }
+
+    public URL getURL() {
+        return this.classLoader.getResource(this.path);
+    }
+
+    public static FileRef from(ClassLoader loader) {
+        return new FileRef(loader, ".");
+    }
+
+    public static FileRef from(ClassLoader loader, String relative) {
+        return from(loader).child(relative);
     }
 }

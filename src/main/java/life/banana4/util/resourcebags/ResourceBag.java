@@ -27,9 +27,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -84,7 +81,7 @@ public abstract class ResourceBag<T> implements Disposable {
             return;
         }
         built = true;
-        File basedir = fileHandle(getClass().getSimpleName().toLowerCase());
+        FileRef basedir = fileHandle(getClass().getSimpleName().toLowerCase());
         Field[] fields = this.getClass().getFields();
 
         for (Field field : fields) {
@@ -100,26 +97,18 @@ public abstract class ResourceBag<T> implements Disposable {
         }
     }
 
-    protected abstract T load(File basedir, Field field);
+    protected abstract T load(FileRef basedir, Field field);
 
-    protected File fileHandle(String path) {
-        try {
-            URL base = getClass().getClassLoader().getResource(".");
-            if (base == null) {
-                throw new BrokenResourceBagException("Base path not found!");
-            }
-            return new File(new File(base.toURI()), path);
-        } catch (URISyntaxException e) {
-            throw new BrokenResourceBagException(e);
-        }
+    protected FileRef fileHandle(String path) {
+        return FileRef.from(getClass().getClassLoader(), path);
     }
 
-    protected File fieldToFileHandle(Field field, File basedir) {
+    protected FileRef fieldToFileHandle(Field field, FileRef basedir) {
         String path = fieldToPath(field);
         if (basedir == null) {
             return fileHandle(path);
         }
-        return new File(basedir, path);
+        return basedir.child(path);
     }
 
     public void dispose() {

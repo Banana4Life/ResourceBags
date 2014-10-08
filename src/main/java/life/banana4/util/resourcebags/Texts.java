@@ -32,11 +32,7 @@ public class Texts extends ResourceBag<String> {
     public String test;
 
     @Override
-    protected String load(File basedir, Field field) {
-        try {
-            return new Scanner(new File(basedir, field.getName() + ".txt")).useDelimiter("\\A").next();
-        } catch (FileNotFoundException e) {
-            return null;
-        }
+    protected String load(FileRef basedir, Field field) {
+        return new Scanner(basedir.child(field.getName() + ".txt").getInputStream()).useDelimiter("\\A").next();
     }
 }
