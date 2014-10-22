@@ -46,7 +46,9 @@ public class FileRef {
 
     public FileRef child(String relativePath) {
         String path = this.path;
-        if (!path.endsWith("/")) {
+        if (path.equals(".")) {
+            path = "";
+        } else if (!path.endsWith("/")) {
             path += "/";
         }
         return new FileRef(this.classLoader, path + relativePath);

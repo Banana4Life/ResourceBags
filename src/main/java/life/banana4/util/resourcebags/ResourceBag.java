@@ -103,7 +103,7 @@ public abstract class ResourceBag<T> implements Disposable {
         return FileRef.from(getClass().getClassLoader(), path);
     }
 
-    protected FileRef fieldToFileHandle(Field field, FileRef basedir) {
+    protected FileRef fieldToFileRef(Field field, FileRef basedir) {
         String path = fieldToPath(field);
         if (basedir == null) {
             return fileHandle(path);
